@@ -3,10 +3,10 @@
 CERTSTOR=/etc/ssl/certs
 KEYSTOR=/etc/ssl/private
 WORKDIR=/var/lib/lego
-CONFDIR=/etc/lego.d
+CONFDIR=/etc/lego-wrapper.d
 DOMDIR=$CONFDIR/domains
 CONFFILE="$CONFDIR/lego.conf"
-RENEWLEFT=30
+RENEWWINDOW=30
 LEGO=`which lego`
 TOS="--accept-tos"
 EMAIL="user@example.com"
@@ -32,7 +32,7 @@ renew() {
 	exp=$(date +%s -d "`openssl x509 -enddate -noout -in $WORKDIR/certificates/${domains[0]}.crt |cut -d'=' -f2`")
 	now=$(date +%s)
 
-	renewtime=$(( $exp - $now - $RENEWLEFT*24*3600 ))
+	renewtime=$(( $exp - $now - $RENEWWINDOW*24*3600 ))
 
 	unset d
 	for i in "${domains[@]}"; do
@@ -71,7 +71,6 @@ doinstall() {
 	install -m 0400 $WORKDIR/certificates/${domains[0]}.key $KEYSTOR
 }
 
-
 while getopts rc o; do
         case $o in
                 "r") renew=true;;
@@ -84,7 +83,13 @@ done
 
 [ -r "$CONFFILE" ] && . $CONFFILE
 
+
 for domfile in $DOMDIR/*; do
+	if [ ! -e $domfile ]; then 
+		echo "Nothing to do, $DOMDIR is empty or missing, exitting..."
+		exit 0
+	fi
+
 	echo Checking file $domfile...
 	unset domains
 	declare -a domains

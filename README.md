@@ -11,7 +11,7 @@ Make sure you read and accept [Let's Encrypt's TOS](https://letsencrypt.org/docu
 
 Don't forget to unset the TESTSERVER variable to make live working certificates. By default the wrapper only produces testing certificates.
 
-This script is suitable for running by cron or any other automation tools. Certificates will only be renewed when in renewal window set by RENEWLEFT (defaults to within the last 30 days of validity)
+This script is suitable for running by cron or any other automation tools. Certificates will only be renewed when in renewal window set by RENEWWINDOW (defaults to within the last 30 days of validity)
 
 !!! Warning !!!
 Be **extremely careful** when running with '-i' parameter, any pre-existing certificate and key files bearing the name of the base domain in system storage (usually /etc/ssl/{certs,private}) **WILL BE OVERWRITTEN**, no questions asked. You have been warned.
