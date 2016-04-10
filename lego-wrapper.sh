@@ -19,8 +19,8 @@ cat << EOF
 usage: $0 [-rci] 
 
   -r: perform a renew of all renewable certificates
-  -c: create any configured certificate that does not exist yet
-  -i: copy created/renewed certificates from lego's working directory to certstore and keystore respectively
+  -c: create any configured certificates that do not exist yet
+  -i: copy any configured certificates from lego's working directory to certstore and keystore respectively
 
 When no parameter is specified, performs a check of creatablilty or renewability.
 
@@ -92,17 +92,20 @@ for domfile in $DOMDIR/*; do
 
 	echo Checking file $domfile...
 	unset domains
+        unset broken
 	declare -a domains
+
 	while read domain; do
-	if grep -q '^[-a-zA-Z0-9][-a-zA-Z0-9\.]\{0,62\}[-a-zA-Z0-9]$' <<< $domain; then
-		domains[${#domains[@]}]=$domain;
-	else
-		echo "ERROR: Invalid domain name: '$domain' in $domfile";
-		usage
-		exit 1
-	fi	
+		if grep -q '^[-a-zA-Z0-9][-a-zA-Z0-9\.]\{0,62\}[-a-zA-Z0-9]$' <<< $domain; then
+			domains[${#domains[@]}]=$domain;
+		else
+			echo "ERROR: Invalid domain name: '$domain' in $domfile. Ignoring file.";
+			broken=true	
+		fi	
 	done < $domfile
 	
+	[ x$broken == "xtrue" ] && continue	
+
 	if [ -f $WORKDIR/certificates/${domains[0]}.crt -a -f $WORKDIR/certificates/${domains[0]}.key ]; then
 		renew
 	fi
