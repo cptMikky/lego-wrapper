@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. /etc/lego-wrapper.d/lego-wrapper.conf
+
+$LEGO_WRAPPER -R

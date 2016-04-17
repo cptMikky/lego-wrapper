@@ -5,7 +5,7 @@ KEYSTOR=/etc/ssl/private
 WORKDIR=/var/lib/lego
 CONFDIR=/etc/lego-wrapper.d
 DOMDIR=$CONFDIR/domains
-CONFFILE="$CONFDIR/lego.conf"
+CONFFILE="$CONFDIR/lego-wraper.conf"
 RENEWWINDOW=30
 LEGO=`which lego`
 TOS="--accept-tos"
@@ -19,8 +19,10 @@ cat << EOF
 usage: $0 [-rci] 
 
   -r: perform a renew of all renewable certificates
+  -R: perform a renew of all renewable certificates and install renewed certificates to certstore and keystore respectively
   -c: create any configured certificates that do not exist yet
-  -i: copy any configured certificates from lego's working directory to certstore and keystore respectively
+  -C: create any configured certificates that do not exist yet and install created certificates to certstore and keystore respectively
+  -i: install any configured certificates from lego's working directory to certstore and keystore respectively
 
 When no parameter is specified, performs a check of creatablilty or renewability.
 
@@ -43,6 +45,8 @@ renew() {
         	if [ x$renew == "xtrue" ]; then
 			echo "Renewing"; 
 			$LEGO $TESTSERVER $TOS $d --email $EMAIL --path $WORKDIR renew
+			[ x$andinst == "xtrue" ] && doandinst=true
+			
 		else
 			echo "${domains[0]} eligible for renewal for ${renewtime#-} seconds, but renewal not requested"
 		fi
@@ -60,6 +64,7 @@ create() {
        	if [ x$create == "xtrue" ]; then
 		echo "Creating new single certificate for ${domains[*]}..."
 		$LEGO $TESTSERVER $TOS $d --email $EMAIL --path $WORKDIR run
+		[ x$andinst == "xtrue" ] && doandinst=true
 	else
 		echo "no certificate for ${domains[0]} found but creation not requested"
 	fi
@@ -74,7 +79,9 @@ doinstall() {
 while getopts rc o; do
         case $o in
                 "r") renew=true;;
+                "R") renew=true; andinst=true;;
                 "c") create=true;;
+                "C") create=true; andinst=true;;
                 "i") doinst=true;;
                 "?") err "Unknown option: $OPTARG"; usage 1;;
 esac
@@ -108,14 +115,16 @@ for domfile in $DOMDIR/*; do
 
 	if [ -f $WORKDIR/certificates/${domains[0]}.crt -a -f $WORKDIR/certificates/${domains[0]}.key ]; then
 		renew
+		
 	fi
 
 	if [ ! -f $WORKDIR/certificates/${domains[0]}.crt -a ! -f $WORKDIR/certificates/${domains[0]}.key ]; then
 		create
 	fi
 
-        if [ x$doinst == "xtrue" ]; then
+        if [ x$doinst == "xtrue" -o x$doandinst == "xtrue" ]; then
 		doinstall
+		doandinst=false
 	fi
 
 done
