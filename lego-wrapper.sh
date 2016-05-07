@@ -12,11 +12,12 @@ TOS="--accept-tos"
 EMAIL="user@example.com"
 
 TESTSERVER="--server=https://acme-staging.api.letsencrypt.org/directory"
+
 usage() {
 
 cat << EOF
 
-usage: $0 [-rci] 
+usage: $0 [-rRcCi] 
 
   -r: perform a renew of all renewable certificates
   -R: perform a renew of all renewable certificates and install renewed certificates to certstore and keystore respectively
@@ -76,7 +77,7 @@ doinstall() {
 	install -m 0400 $WORKDIR/certificates/${domains[0]}.key $KEYSTOR
 }
 
-while getopts rc o; do
+while getopts rcRCi o; do
         case $o in
                 "r") renew=true;;
                 "R") renew=true; andinst=true;;
@@ -91,7 +92,7 @@ done
 [ -r "$CONFFILE" ] && . $CONFFILE
 
 
-for domfile in $DOMDIR/*; do
+for domfile in `ls -1 $DOMDIR/*`; do
 	if [ ! -e $domfile ]; then 
 		echo "Nothing to do, $DOMDIR is empty or missing, exitting..."
 		exit 0
@@ -103,7 +104,7 @@ for domfile in $DOMDIR/*; do
 	declare -a domains
 
 	while read domain; do
-		if grep -q '^[-a-zA-Z0-9][-a-zA-Z0-9\.]\{0,62\}[-a-zA-Z0-9]$' <<< $domain; then
+		if grep -q '^[[:alnum:]][[:alnum:]-\.]*[[:alpha:]]$' <<< $domain; then
 			domains[${#domains[@]}]=$domain;
 		else
 			echo "ERROR: Invalid domain name: '$domain' in $domfile. Ignoring file.";
