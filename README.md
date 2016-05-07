@@ -1,11 +1,11 @@
 # lego-wrapper
 Wrapper for [xenolf's lego](https://github.com/xenolf/lego) Let's Encrypt client automation.
 
-Each file in /etc/lego.d/domains contains list of domains for which **one** certificate is generated. First line is expected to contain the base domain, other lines will be added to the certificate as aliases (subjAltName).
+Each file in /etc/lego-wrapper.d/domains contains list of domains for which **one** certificate is generated. First line is expected to contain the base domain, other lines will be added to the certificate as aliases (subjAltName).
 
-Configurable via /etc/lego.d/lego.conf (default config file, can be edited in the script).
+Configurable via /etc/lego-wrapper.d/lego-wrapper.conf (default config file, can be edited in the script).
 
-Do not forget to add your email addres to lego.conf (EMAIL=your@e-mail.example.com).
+Do not forget to add your email addres to lego-wrapper.conf (EMAIL=your@e-mail.example.com).
 
 Make sure you read and accept [Let's Encrypt's TOS](https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf) **before** you run this script **OR** remove the TOC= configuration option to be prompted for acceptance by Lego at runtime.
 
