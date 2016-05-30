@@ -5,7 +5,7 @@ KEYSTOR=/etc/ssl/private
 WORKDIR=/var/lib/lego
 CONFDIR=/etc/lego-wrapper.d
 DOMDIR=$CONFDIR/domains
-CONFFILE="$CONFDIR/lego-wraper.conf"
+CONFFILE="$CONFDIR/lego-wrapper.conf"
 RENEWWINDOW=30
 LEGO=`which lego`
 TOS="--accept-tos"
@@ -103,8 +103,8 @@ for domfile in `ls -1 $DOMDIR/*`; do
         unset broken
 	declare -a domains
 
-	while read domain; do
-		if grep -q '^[[:alnum:]][[:alnum:]-\.]*[[:alpha:]]$' <<< $domain; then
+	for domain in `cat $domfile`; do
+		if grep -q '^[[:alnum:]][-[:alnum:]\.]*[[:alpha:]]$' <<< $domain; then
 			domains[${#domains[@]}]=$domain;
 		else
 			echo "ERROR: Invalid domain name: '$domain' in $domfile. Ignoring file.";
