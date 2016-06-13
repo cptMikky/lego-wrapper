@@ -10,6 +10,9 @@ RENEWWINDOW=30
 LEGO=`which lego`
 TOS="--accept-tos"
 EMAIL="user@example.com"
+KEYMODE="0440"
+KEYOWNER=root
+KEYGROUP=ssl-cert
 
 TESTSERVER="--server=https://acme-staging.api.letsencrypt.org/directory"
 
@@ -74,7 +77,7 @@ create() {
 doinstall() {
 	echo "Installing certificate files for ${domains[0]}..."
 	cp $WORKDIR/certificates/${domains[0]}.crt $CERTSTOR
-	install -m 0400 $WORKDIR/certificates/${domains[0]}.key $KEYSTOR
+	install -m $KEYMODE -o $KEYOWNER -g $KEYGROUP $WORKDIR/certificates/${domains[0]}.key $KEYSTOR
 }
 
 while getopts rcRCi o; do
