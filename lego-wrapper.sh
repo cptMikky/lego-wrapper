@@ -13,6 +13,9 @@ EMAIL="user@example.com"
 KEYMODE="0440"
 KEYOWNER=root
 KEYGROUP=ssl-cert
+CERTMODE="0644"
+CERTOWNER=root
+CERTGROUP=ssl-cert
 
 TESTSERVER="--server=https://acme-staging.api.letsencrypt.org/directory"
 
@@ -76,7 +79,7 @@ create() {
 
 doinstall() {
 	echo "Installing certificate files for ${domains[0]}..."
-	cp $WORKDIR/certificates/${domains[0]}.crt $CERTSTOR
+	install -m $CERTMODE -o $CERTOWNER -g $CERTGROUP $WORKDIR/certificates/${domains[0]}.crt $CERTSTOR
 	install -m $KEYMODE -o $KEYOWNER -g $KEYGROUP $WORKDIR/certificates/${domains[0]}.key $KEYSTOR
 }
 
