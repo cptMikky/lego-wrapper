@@ -1,3 +1,8 @@
+# Notice of deprecation
+
+I will no longer maintain lego-wrapper as its functionality has been completely deprecated by [Certbot](https://certbot.eff.org/) which I fully recommend as a replacement.
+
+
 # lego-wrapper
 Wrapper for [xenolf's lego](https://github.com/xenolf/lego) Let's Encrypt client automation.
 
